@@ -1,0 +1,72 @@
+{
+  "name": "elpis",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+<<<<<<< HEAD
+    "dev": "NEXT_DISABLE_TURBOPACK=1 next dev",
+=======
+    "dev": "next dev --turbopack",
+>>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+<<<<<<< HEAD
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
+    "@gray-adeyi/korapay-sdk": "^0.3.0",
+    "@paystack/inline-js": "^2.22.2",
+    "@paystack/paystack-sdk": "^1.0.1",
+    "@radix-ui/react-accordion": "^1.2.11",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-icons": "^1.3.2",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/themes": "^3.2.1",
+    "@ramonak/react-progress-bar": "^5.4.0",
+    "axios": "^1.10.0",
+    "classnames": "^2.5.1",
+    "firebase": "^11.9.1",
+    "install": "^0.13.0",
+    "lucide-react": "^0.518.0",
+    "moment": "^2.30.1",
+    "next": "^16.0.10",
+    "npm": "^11.6.2",
+    "plyr": "^3.7.8",
+    "plyr-react": "^5.3.0",
+    "react": "^19.2.3",
+    "react-audio-player": "^0.17.0",
+    "react-audio-visualize": "^1.2.0",
+    "react-calendar": "^6.0.0",
+    "react-countdown": "^2.3.6",
+    "react-dom": "^19.2.3",
+    "react-firebase-hooks": "^5.1.1",
+    "react-flags-select": "^2.5.0",
+    "react-h5-audio-player": "^3.10.1",
+    "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
+    "react-modal-sheet": "^4.4.0",
+    "react-number-format": "^5.4.4",
+    "react-phone-input-2": "^2.15.1",
+    "react-player": "^3.3.1",
+    "react-select": "^5.10.2",
+    "react-select-country-list": "^2.2.3",
+    "react-spinners": "^0.17.0",
+    "react-toastify": "^11.0.5",
+    "react-use-audio-player": "^4.0.2",
+    "recharts": "^3.0.2",
+    "underscore": "^1.13.7",
+    "uuid": "^11.1.0",
+    "video.js": "^8.23.4"
+=======
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "15.3.3"
+>>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4"
+  }
+}

@@ -1,0 +1,375 @@
+@import "tailwindcss";
+<<<<<<< HEAD
+@tailwind utilities;
+@import "@radix-ui/themes/styles.css";
+
+
+
+:root {
+  --background: #fff;
+  --foreground: #fff;
+
+  /* Removed Lato and using Raleway as default */
+  --default-font-family: var(--font-raleway);
+
+  /* Only these two fonts */
+  --font-raleway: var(--font-raleway);
+  --font-cinzel: var(--font-cinzel);  
+ --plyr-color-main: #D4AF3F; /* replace with your theme color */
+=======
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+>>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+<<<<<<< HEAD
+  --font-sans: var(--font-raleway); /* default font is now Raleway */
+  --font-raleway: var(--font-raleway);
+  --font-cinzel: var(--font-cinzel);
+
+  --color-primary: #D4AF3F;
+  --color-secondary: #263238;
+  --color-background: #131315;
+  --color-shadedgray: #191717;
+  --color-darkfont: #000000;
+  --color-ground: #FCEEF3;
+  --color-lightgold: #F9F5EC;
+  --color-touchsec: #B8860B;
+  --color-darkblue: #1E40AF;
+  --color-cream:#FDFCF9;
+  --color-darkgold:#AC7F26;
+  
+  --color-blushpink: #FCEEF3;
+  --color-deepgreen: #003D32;
+  --color-eggplant: #4C2E4F;
+  --color-eggplantlight:#f5eef5;
+  --color-midnightblue:#1B263B;
+  --color-coal:#1E1E1E;
+  --color-emerald:#003D32;
+
+  --font-size-xxs: 0.625rem;
+
+  --animation-slide-fade: slide-in-fade 0.6s ease-out both;
+=======
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+>>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+<<<<<<< HEAD
+    --background: #fff;
+    --foreground: #ededed;
+    --default-font-family: var(--font-raleway);
+=======
+    --background: #0a0a0a;
+    --foreground: #ededed;
+>>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
+  }
+}
+
+body {
+<<<<<<< HEAD
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-raleway); /* No more lato here */
+}
+
+
+.radix-themes[data-theme] {
+  --default-font-family: var(--font-raleway) !important;
+  --heading-font-family: var(--font-raleway) !important;
+  --strong-font-family: var(--font-raleway) !important;
+  --em-font-family: var(--font-raleway) !important;
+  --quote-font-family: var(--font-raleway) !important;
+}
+
+@layer base {
+  .radix-themes[data-theme] {
+    --default-font-family: var(--font-raleway);
+    --heading-font-family: var(--font-raleway);
+    --strong-font-family: var(--font-raleway);
+    --em-font-family: var(--font-raleway);
+    --quote-font-family: var(--font-raleway);
+  }
+}
+.radix-themes {
+  font-family: var(--font-raleway), sans-serif !important;
+}
+
+.Toastify__toast {
+  font-family: var(--font-raleway) !important;
+  font-size: 14px;
+}
+
+.Toastify__toast-body {
+  font-family: var(--font-raleway) !important;
+}
+.custom-toast {
+  font-family: var(--font-raleway) !important;
+}
+
+
+@layer utilities {
+  @keyframes slide-in-fade {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-fade {
+    animation: var(--animation-slide-fade);
+  }
+
+  @keyframes breathe {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  .animate-breathe {
+    animation: breathe 1.6s ease-in-out infinite;
+  }
+  .bg-safe-gradient {
+    background-image: linear-gradient(135deg, #fff9db 0%, #fafafa 50%, #ffffff 100%);
+  }
+}
+
+.bg-profile-gradient {
+  background-image: linear-gradient(135deg, #fff9ec 0%, #fafafa 50%, #ffffff 100%);
+}
+
+.gold-gradient {
+  background-image: linear-gradient(135deg, #D4AF3F 0%, #A97A22 40%, #BF953D 100%);
+
+}
+
+.bg-gold-gradient {
+  background-image: linear-gradient(135deg, #D4AF3F 0%, #A97A22 40%, #BF953D 100%);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4),
+              inset 0 -2px 6px rgba(0, 0, 0, 0.2),
+              0 4px 12px rgba(0, 0, 0, 0.15);
+
+              
+}
+
+.bg-gold-gradient-two {
+  background-image: linear-gradient(135deg, #D4AF3F 0%, #A97A22 40%, #BF953D 100%);
+  padding: 0.65rem 0.55rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4),
+              inset 0 -2px 6px rgba(0, 0, 0, 0.2),
+              0 4px 12px rgba(0, 0, 0, 0.15);
+
+              
+}
+.emboss{
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4),
+              inset 0 -2px 6px rgba(0, 0, 0, 0.2),
+              0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.layoutstyle{
+  @apply flex justify-between items-center pb-2 mb-3
+}
+
+.iconStyle {
+  @apply text-gray-300 mr-2;
+}
+
+.label{
+  @apply block text-sm font-medium text-gray-700
+}
+
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.linkStyle {
+    @apply text-sm font-semibold text-secondary hover:text-primary;
+  }
+
+
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #D4AF3F 0%, #A97A22 40%, #BF953D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    display: inline-block;
+    font-weight: bold;
+    background-size: 200% auto;
+    animation: shine 2.5s linear infinite;
+  }
+  
+  @keyframes shine {
+    0% {
+      background-position: 200% center;
+    }
+    100% {
+      background-position: -200% center;
+    }
+  }
+  /* In your global CSS file */
+  .react-calendar {
+    @apply text-sm text-gray-800;
+  }
+
+  .textInput {
+    @apply flex items-center border border-gray-300 bg-white overflow-hidden w-full rounded-lg pl-3 h-13
+  }
+  
+  .react-calendar__tile--now {
+    background-color: #D4AF3F !important;
+    color: white !important;
+    border-radius: 0.5rem; /* Optional: make it rounded */
+  }
+  
+  .react-calendar__tile--active {
+    background-color: #D4AF3F !important;
+    color: white !important;
+    border-radius: 0.5rem;
+  }
+  .plyr__video-wrapper {
+    height: 100% !important;
+  }
+  
+  .plyr {
+    height: 100% !important;
+  }
+
+ 
+
+.plyr__tooltip {
+  background-color: #D4AF3F;
+}
+.plyr__control--overlaid {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove blue glow/focus ring */
+.plyr__control--overlaid:focus,
+.plyr__control--overlaid:hover {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  background-color: #D4AF37; /* gold */
+  border-radius: 4px;
+  padding: 4px;
+}
+
+input[type="datetime-local"]:focus {
+  outline: none;
+  border-color: #b38e2e; /* darker gold focus */
+}
+
+/* globals.css */
+::-webkit-scrollbar {
+  width: 3px; /* scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* track color */
+  border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D4AF3F, #A97A22);
+  border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #D4AF3F, #A97A22);
+}
+.my-scroll-container {
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.my-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+/* Active step circle */
+.rsp-step .rsp-circle.rsp-circle-active {
+  background-color: #D4AF3F !important;
+  border-color: #D4AF3F !important;
+  color: white !important;
+}
+
+/* Completed step circle */
+.rsp-step .rsp-circle.rsp-circle-completed {
+  background-color: #D4AF3F !important;
+  border-color: #D4AF3F !important;
+  color: white !important;
+}
+
+/* Connector line */
+.rsp-line {
+  background-color: #D4AF3F !important;
+}
+
+.markdown p {
+  margin-top: 0.5rem;   /* space above */
+  margin-bottom: 0.5rem; /* space below */
+}
+.markdown ul,
+.markdown ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.2rem;
+}
+.react-select__menu-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.react-select__menu-list::-webkit-scrollbar-thumb {
+  background-color: #D4AF37;
+  border-radius: 6px;
+}
+
+.react-select__menu-list::-webkit-scrollbar-track {
+  background: #f9fafb;
+=======
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+>>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
+}
