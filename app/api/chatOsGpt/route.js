@@ -1,18 +1,18 @@
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { userId, msg, token_charge, type } = body;
+    const { userId, msg, token_charge, type, chatId } = body;
 
     const LINK_PARSER = type
       ? type === "chat"
         ? process.env.CHAT_LINK
         : type === "voice"
-        ? process.env.VOICE_LINK
-        : type === "chart"
-        ? process.env.CHAT_LINK
-        : process.env.CHAT_LINK
+          ? process.env.VOICE_LINK
+          : type === "chart"
+            ? process.env.CHAT_LINK
+            : process.env.CHAT_LINK
       : "";
-    const DataPasser = { msg, userId, token_charge, type };
+    const DataPasser = { msg, userId, token_charge, type, chatId };
 
     if (!LINK_PARSER) {
       console.log("Error", `invalid url, provide a url ${type}`);
@@ -21,7 +21,7 @@ export async function POST(req) {
           success: false,
           error: "invalid url, provide a url",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     //const controller = new AbortController();
@@ -48,7 +48,7 @@ export async function POST(req) {
           success: false,
           error: data.error || "Eva backend request failed",
         },
-        { status: 400 } // or 402 if it's a token issue
+        { status: 400 }, // or 402 if it's a token issue
       );
     }
 
@@ -63,7 +63,7 @@ export async function POST(req) {
         success: false,
         error: e.message || "Eva backend failed",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

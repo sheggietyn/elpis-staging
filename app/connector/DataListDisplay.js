@@ -128,14 +128,14 @@ export const PaymentList = (passer, VerStatus) => {
         dataRef,
         orderByChild("Payment_Status"),
         equalTo(VerStatus),
-        limitToLast(1000)
+        limitToLast(1000),
       );
     } else {
       setLoadTri(true);
       dataQuery = query(
         dataRef,
         orderByChild("Payment_Date"),
-        limitToLast(1000)
+        limitToLast(1000),
       );
     }
 
@@ -169,7 +169,7 @@ export const AffiliateEarningList = () => {
     const dataQuery = query(
       dataRef,
       orderByChild("EarningDate"),
-      limitToLast(20)
+      limitToLast(20),
     );
 
     const fetchData = () => {
@@ -207,7 +207,7 @@ export const AffiliateCashout = () => {
     const dataQuery = query(
       dataRef,
       orderByChild("CreatedDate"),
-      limitToLast(20)
+      limitToLast(20),
     );
 
     const fetchData = () => {
@@ -245,7 +245,7 @@ export const AffiliateTeamList = () => {
     const dataQuery = query(
       dataRef,
       orderByChild("createdAt"),
-      limitToLast(30)
+      limitToLast(30),
     );
 
     const fetchData = () => {
@@ -283,7 +283,7 @@ export const OverideTeamList = () => {
     const dataQuery = query(
       dataRef,
       orderByChild("createdAt"),
-      limitToLast(20)
+      limitToLast(20),
     );
 
     const fetchData = () => {
@@ -424,7 +424,7 @@ export const AffAdminList = () => {
       dataRef,
       orderByChild("AffiliateStatus"),
       equalTo(true),
-      limitToLast(1000)
+      limitToLast(1000),
     );
 
     const fetchData = () => {
@@ -462,7 +462,7 @@ export const AffAdminReff = (UserKey) => {
     const dataQuery = query(
       dataRef,
       orderByChild("createdAt"),
-      limitToLast(1000)
+      limitToLast(1000),
     );
 
     const fetchData = () => {
@@ -703,7 +703,7 @@ export const OverideTeamListII = (UserKey) => {
     const dataQuery = query(
       dataRef,
       orderByChild("createdAt"),
-      limitToLast(1000)
+      limitToLast(1000),
     );
 
     const fetchData = () => {
@@ -728,7 +728,7 @@ export const OverideTeamListII = (UserKey) => {
   return { OverTeamData, LoadOverData };
 };
 
-export const ChatList = () => {
+export const ChatList = (ChatId) => {
   const user = useContext(AuthContext);
   const [ChatData, setChatData] = useState([]);
   const [LoadData, setLoadData] = useState(true);
@@ -736,9 +736,9 @@ export const ChatList = () => {
   useEffect(() => {
     if (!user?.uid) return;
 
-    const CrsUrl = `Eva Request Users/${user.uid}/${user.uid}`;
+    const CrsUrl = `Eva Request Users/${user.uid}/${ChatId}`;
     const dataRef = ref(DB, CrsUrl);
-    const dataQuery = query(dataRef, orderByChild("dateAdded"));
+    const dataQuery = query(dataRef, orderByChild("DateAdded"));
 
     const fetchData = () => {
       onValue(dataQuery, (snapshot) => {
@@ -757,9 +757,42 @@ export const ChatList = () => {
     return () => {
       // off(dataRef); // Uncomment if using `on` instead of `onValue`
     };
-  }, [user?.uid]);
+  }, [user?.uid, ChatId]);
 
   return { ChatData, LoadData };
+};
+
+export const ChatListHis = () => {
+  const user = useContext(AuthContext);
+  const [ChatListData, setChatListData] = useState([]);
+  const [LoadListData, setLoadListData] = useState(true);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const CrsUrl = `Eva Chat List Display/${user.uid}/${user.uid}`;
+    const dataRef = ref(DB, CrsUrl);
+    const dataQuery = query(dataRef, orderByChild("DateAdded"));
+
+    const fetchData = () => {
+      onValue(dataQuery, (snapshot) => {
+        const fetchedData = [];
+        snapshot.forEach((snap) => {
+          fetchedData.push({ id: snap.key, ...snap.val() });
+        });
+        setChatListData(fetchedData);
+        setLoadListData(false);
+      });
+    };
+
+    fetchData();
+
+    // Optional: cleanup listener if needed
+    return () => {
+      // off(dataRef); // Uncomment if using `on` instead of `onValue`
+    };
+  }, [user?.uid]);
+
+  return { ChatListData, LoadListData };
 };
 
 export const EvaChatList = () => {
@@ -775,7 +808,7 @@ export const EvaChatList = () => {
     const dataQuery = query(
       dataRef,
       orderByChild("dateAdded"),
-      limitToLast(150)
+      limitToLast(150),
     );
 
     const fetchData = () => {
@@ -847,7 +880,7 @@ export const DisplayUserList = () => {
     const dataQuery = query(
       dataRef,
       orderByChild("DateAdded"),
-      limitToLast(100)
+      limitToLast(100),
     );
 
     const fetchData = () => {

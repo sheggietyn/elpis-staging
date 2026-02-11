@@ -33,8 +33,8 @@ import Image from "next/image";
 import { ConnectData } from "@/app/connector/CloggerFunc";
 import { NotPops } from "@/app/util/ToastLoader";
 import { VerifyTnx } from "@/app/Libs/TxChecker";
-import { EvaBtn, PopUpChat } from "./EvaBtn";
-import { ChatList } from "@/app/connector/DataListDisplay";
+import { EvaBtn, EVAChatEngine, PopUpChat } from "./EvaBtn";
+import { ChatList, ChatListHis } from "@/app/connector/DataListDisplay";
 import { v4 as uuidv4 } from "uuid";
 
 export const Dashboard = ({ children }) => {
@@ -45,11 +45,15 @@ export const Dashboard = ({ children }) => {
   const [Type, setType] = useState("");
   const [loading, setLoading] = useState(false);
   const { ChatData, LoadData } = ChatList();
+  const { ChatListData, LoadListData } = ChatListHis();
   const [TempChat, setTempChat] = useState([]);
   const [audio, setAudio] = useState("");
   const [IdChecker, setIdChecker] = useState("");
   const [Dismodal, setDismodal] = useState(false);
-  const DocID = uuidv4();
+  const [openFloat, setopenFloat] = useState(false);
+
+  let DocID = "";
+
   const AllChats = [...ChatData, ...TempChat];
 
   const pathname = usePathname();
@@ -152,7 +156,8 @@ export const Dashboard = ({ children }) => {
   const SendChat = async (item) => {
     if (!Message.trim()) return;
     setIdChecker(item ? item.id : "");
-
+    const docId = uuidv4();
+    DocID = docId;
     const tempId = Date.now(); // unique id for temporary message
     const newChat = {
       id: tempId,
@@ -160,6 +165,7 @@ export const Dashboard = ({ children }) => {
       reply: "",
       loading: true,
       type: item ? item.type : "chat",
+      chatId: DocID,
     };
     setLoading(true);
     setTempChat((prev) => [...prev, newChat]);
@@ -188,8 +194,8 @@ export const Dashboard = ({ children }) => {
         prev.map((chat) =>
           chat.id === tempId
             ? { ...chat, reply: data.response || data.reply, loading: false }
-            : chat
-        )
+            : chat,
+        ),
       );
 
       // Once Firebase updates, ChatData will include this chat,
@@ -207,8 +213,8 @@ export const Dashboard = ({ children }) => {
                 reply: err.message || "❌ Network error. Please try again.",
                 loading: false,
               }
-            : chat
-        )
+            : chat,
+        ),
       );
     }
   };
@@ -241,6 +247,20 @@ export const Dashboard = ({ children }) => {
       funcSend={() => {
         SendChat();
       }}
+      OwnData={ChatListData}
+      OwnLoad={LoadListData}
+      openFloat={openFloat}
+      Floater={() => setopenFloat(!openFloat)}
+      FloaterTwo={() => setopenFloat(false)}
+    />
+  );
+
+  const LoremPopStatic = (
+    <EVAChatEngine
+      opener={isEvaOpen}
+      closeOpener={() => setIsEvaOpen(false)}
+      Username={Username}
+      userId={user.uid}
     />
   );
 
@@ -266,6 +286,14 @@ export const Dashboard = ({ children }) => {
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
+
+  const SlowClose = () => {
+    if (isEvaOpen) {
+      return null;
+    } else {
+      setopenFloat(false);
+    }
+  };
 
   return (
     <>
@@ -412,8 +440,14 @@ export const Dashboard = ({ children }) => {
           {/* Page Content */}
           <main className="flex-1 p-3 md:p-6">
             {children}
-            {LoremPop}
-            <EvaBtn openChat={() => setIsEvaOpen(true)} />
+            {LoremPopStatic}
+            <EvaBtn
+              openChat={() => {
+                setIsEvaOpen(!isEvaOpen);
+                SlowClose();
+              }}
+              DisplayCaller={isEvaOpen}
+            />
           </main>
         </div>
 

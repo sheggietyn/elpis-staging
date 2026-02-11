@@ -134,7 +134,7 @@ export default function page({ params }) {
     if (!emailRegex.test(EmailAff.toLowerCase()) || EmailAff === "") {
       toast.error(
         "email address is required to generate affiliate link",
-        Tagger
+        Tagger,
       );
     } else {
       setLoadII(true);
@@ -154,7 +154,7 @@ export default function page({ params }) {
     const userQueryRef = query(
       usersRef,
       orderByChild("AffId"),
-      equalTo(FetchId)
+      equalTo(FetchId),
     );
   };
 
@@ -165,7 +165,7 @@ export default function page({ params }) {
     const userQueryRef = query(
       userAffRef,
       orderByChild("AffId"),
-      equalTo(FetchId)
+      equalTo(FetchId),
     );
     if (FetchId) {
       get(userQueryRef)
@@ -195,7 +195,7 @@ export default function page({ params }) {
           } else {
             toast.info(
               "This referal link is invalid and has been ignored",
-              Tagger
+              Tagger,
             );
           }
         })
@@ -300,7 +300,9 @@ export default function page({ params }) {
   };
 
   const handlePayment = () => {
-    const paystack =''
+    const paystack = new Paystack(
+      "pk_live_e1e3d2b1f657735138ab8d7ae53a482b0b30bd97",
+    );
 
     paystack.transaction.initialize({
       key: process.env.NEXT_PUBLIC_PAYSTACK_KEY, // Your public key
@@ -383,7 +385,7 @@ export default function page({ params }) {
     const userQueryRef = query(
       userAffRef,
       orderByChild("AffId"),
-      equalTo(username)
+      equalTo(username),
     );
 
     if (username) {

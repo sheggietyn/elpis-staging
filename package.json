@@ -3,17 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-<<<<<<< HEAD
     "dev": "NEXT_DISABLE_TURBOPACK=1 next dev",
-=======
-    "dev": "next dev --turbopack",
->>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
     "@gray-adeyi/korapay-sdk": "^0.3.0",
@@ -59,11 +54,6 @@
     "underscore": "^1.13.7",
     "uuid": "^11.1.0",
     "video.js": "^8.23.4"
-=======
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.3.3"
->>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

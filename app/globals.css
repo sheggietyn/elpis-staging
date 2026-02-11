@@ -1,5 +1,4 @@
 @import "tailwindcss";
-<<<<<<< HEAD
 @tailwind utilities;
 @import "@radix-ui/themes/styles.css";
 
@@ -16,18 +15,11 @@
   --font-raleway: var(--font-raleway);
   --font-cinzel: var(--font-cinzel);  
  --plyr-color-main: #D4AF3F; /* replace with your theme color */
-=======
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
->>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-<<<<<<< HEAD
   --font-sans: var(--font-raleway); /* default font is now Raleway */
   --font-raleway: var(--font-raleway);
   --font-cinzel: var(--font-cinzel);
@@ -47,35 +39,26 @@
   --color-blushpink: #FCEEF3;
   --color-deepgreen: #003D32;
   --color-eggplant: #4C2E4F;
-  --color-eggplantlight:#f5eef5;
   --color-midnightblue:#1B263B;
   --color-coal:#1E1E1E;
   --color-emerald:#003D32;
+  --color-eggplantlight:#f5eef5;
+
 
   --font-size-xxs: 0.625rem;
 
   --animation-slide-fade: slide-in-fade 0.6s ease-out both;
-=======
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
->>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-<<<<<<< HEAD
     --background: #fff;
     --foreground: #ededed;
     --default-font-family: var(--font-raleway);
-=======
-    --background: #0a0a0a;
-    --foreground: #ededed;
->>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
   }
 }
 
 body {
-<<<<<<< HEAD
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-raleway); /* No more lato here */
@@ -344,32 +327,4 @@ input[type="datetime-local"]:focus {
 /* Connector line */
 .rsp-line {
   background-color: #D4AF3F !important;
-}
-
-.markdown p {
-  margin-top: 0.5rem;   /* space above */
-  margin-bottom: 0.5rem; /* space below */
-}
-.markdown ul,
-.markdown ol {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding-left: 1.2rem;
-}
-.react-select__menu-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.react-select__menu-list::-webkit-scrollbar-thumb {
-  background-color: #D4AF37;
-  border-radius: 6px;
-}
-
-.react-select__menu-list::-webkit-scrollbar-track {
-  background: #f9fafb;
-=======
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
->>>>>>> c482f5262e580f2e6da5dbeb6ae1e12b0d560a86
 }

@@ -160,3 +160,35 @@ export const NewsLoad = () => {
     </div>
   );
 };
+
+export const BotDataLoad = ({ count }) => {
+  return (
+    <>
+      {Array.from({ length: count }, (_, index) => (
+        <div className="py-2 gap-y-1" key={index}>
+          <Skeleton className="h-12 w-full rounded-lg" height={"18px"} />
+          <div className="pt-2 w-[30%]">
+            <Skeleton className="h-4  rounded-lg" height={"6px"} />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
+
+export const ChatDiplayLoad = ({ count }) => {
+  return (
+    <>
+      {Array.from({ length: count }, (_, index) => (
+        <div className="py-2 gap-y-1" key={index}>
+          <div className="px-3 py-2 rounded-md text-sm select-all w-fit mb-2 ml-auto">
+            <Skeleton className="h-32 w-full rounded-lg" height={"128px"} />
+          </div>
+          <div className="px-3 py-2 text-sm text w-fit max-w-none mr-auto">
+            <Skeleton className="h-32 w-full rounded-lg" height={"128px"} />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
