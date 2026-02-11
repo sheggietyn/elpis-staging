@@ -39,6 +39,7 @@ import { LongBtn } from "../../Buttons/BtnLarge";
 import { v4 as uuidv4 } from "uuid";
 import { ChatList, ChatListHis } from "@/app/connector/DataListDisplay";
 import { ConnectData } from "@/app/connector/CloggerFunc";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const EvaBtn = ({ openChat, DisplayCaller }) => {
   return (
@@ -157,7 +158,7 @@ const PlayAudio = ({ audioUrl }) => {
 const TitleDateCard = ({ title, date, onClick }) => {
   return (
     <div
-      className="w-full border border-gray-200 rounded-lg p-4 bg-white"
+      className="w-full border border-gray-200 cursor-pointer rounded-lg p-4 bg-white"
       onClick={onClick}
     >
       <p className="text-sm font-semibold text-gray-900">{title}</p>
@@ -438,6 +439,10 @@ export const PopUpChat = ({
   );
 };
 
+const getChatId = () => {
+  return localStorage.getItem("chatId") || "";
+};
+
 export const EVAChatEngine = (data) => {
   const { userId, Username, opener, closeOpener } = data ? data : {};
   const bottomRef = useRef(null);
@@ -447,8 +452,10 @@ export const EVAChatEngine = (data) => {
   const [chatId, setChatId] = useState("");
   const [Reply, setReply] = useState("");
   const { ChatListData, LoadListData } = ChatListHis();
+
   const [wormData, setWormData] = useState([]);
-  const { ChatData, LoadData } = ChatList(wormData ? wormData.ChatId : chatId);
+  const chatIdFromStorage = getChatId();
+  const { ChatData, LoadData } = ChatList(chatIdFromStorage);
   const [TempChat, setTempChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const [SplitLoader, setSplitLoad] = useState(false);
@@ -486,12 +493,18 @@ export const EVAChatEngine = (data) => {
     setSplitLoad(true);
     setTimeout(() => {
       setSplitLoad(false);
-    }, 2000);
+      localStorage.setItem("chatId", docId);
+    }, 3000);
   };
 
   const DisplayChat = (item) => {
     setWormData(item);
+    localStorage.setItem("chatId", item.ChatId);
     setIsFlat(true);
+    setSplitLoad(true);
+    setTimeout(() => {
+      setSplitLoad(false);
+    }, 2000);
   };
 
   const SendChat = async (item) => {
@@ -516,7 +529,7 @@ export const EVAChatEngine = (data) => {
         userId: userId,
         token_charge: 2000,
         type: item ? item.type : "chat",
-        chatId: chatId,
+        chatId: chatIdFromStorage,
       };
 
       const res = await fetch("/api/chatOsGpt", {
@@ -604,7 +617,17 @@ export const EVAChatEngine = (data) => {
               {ChatListData.map((item) => (
                 <TitleDateCard
                   key={item.id}
-                  title={item.Title}
+                  title={
+                    item.Title
+                      ? item.Title.length > 50
+                        ? (
+                            item.Title.charAt(0).toUpperCase() +
+                            item.Title.slice(1)
+                          ).substring(0, 50) + "..."
+                        : item.Title.charAt(0).toUpperCase() +
+                          item.Title.slice(1)
+                      : ""
+                  }
                   onClick={() => DisplayChat(item)}
                   date={<DateTimeTag TakeDate={item.DateAdded} />}
                 />
@@ -682,7 +705,7 @@ export const EVAChatEngine = (data) => {
 
         {/* User Message SplitLoader */}
         {LoadData || SplitLoader ? (
-          <ChatDiplayLoad count={6} />
+          <ChatDiplayLoad count={4} />
         ) : (
           <>
             {AllChats.map((chat, index) => (
@@ -763,7 +786,16 @@ export const EVAChatEngine = (data) => {
   return (
     <>
       {opener && (
-        <div className="fixed bottom-24 right-6 w-96 h-160 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-50">
+        <motion.div
+          initial={{ scale: 0.92, opacity: 0, y: 12 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0, y: 8 }}
+          transition={{
+            duration: 0.4,
+            ease: [0.22, 1, 0.36, 1], // smooth, premium curve
+          }}
+          className={`fixed bottom-24 right-6 w-96 h-160 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-50 `}
+        >
           {/* Header */}
           <div className="flex items-center justify-between bg-primary text-white px-4 py-3 rounded-t-2xl">
             <div className="flex gap-x-2 items-center">
@@ -795,7 +827,7 @@ export const EVAChatEngine = (data) => {
           </div>
           {FloaterDisplay}
           {isFlat ? Switch : Lefter}
-        </div>
+        </motion.div>
       )}
     </>
   );
@@ -829,7 +861,9 @@ export const PopUpChatNew = ({
   return (
     <>
       {opener && (
-        <div className="fixed bottom-24 right-6 w-80 h-96 bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col z-50">
+        <div
+          className={`fixed bottom-24 right-6 w-80 h-96 bg-white rounded-2xl shadow-xl border menu ${opener ? "open" : ""} border-gray-200 flex flex-col z-50`}
+        >
           {/* Header */}
           <div className="flex items-center justify-between bg-primary text-white px-4 py-3 rounded-t-2xl">
             <div className="flex gap-x-2 items-center">

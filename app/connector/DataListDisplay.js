@@ -746,7 +746,7 @@ export const ChatList = (ChatId) => {
         snapshot.forEach((snap) => {
           fetchedData.push({ id: snap.key, ...snap.val() });
         });
-        setChatData(fetchedData);
+        setChatData(fetchedData.reverse());
         setLoadData(false);
       });
     };
@@ -779,7 +779,7 @@ export const ChatListHis = () => {
         snapshot.forEach((snap) => {
           fetchedData.push({ id: snap.key, ...snap.val() });
         });
-        setChatListData(fetchedData);
+        setChatListData(fetchedData.reverse());
         setLoadListData(false);
       });
     };
@@ -807,7 +807,7 @@ export const EvaChatList = () => {
     const dataRef = ref(DB, CrsUrl);
     const dataQuery = query(
       dataRef,
-      orderByChild("dateAdded"),
+      orderByChild("DateAdded"),
       limitToLast(150),
     );
 
