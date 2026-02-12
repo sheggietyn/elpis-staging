@@ -848,7 +848,7 @@ export const EVAChatEngine = (data) => {
             duration: 0.4,
             ease: [0.22, 1, 0.36, 1], // smooth, premium curve
           }}
-          className={`fixed bottom-24 right-6 w-96 h-160 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-50 `}
+          className={`fixed z-60 bg-white shadow-2xl border border-gray-200 flex flex-col inset-0 w-full h-full rounded-none md:inset-auto md:bottom-24 md:right-6 md:w-96 md:h-160 md:rounded-2xl`}
         >
           {/* Header */}
           <div className="flex items-center justify-between bg-primary text-white px-4 py-3 rounded-t-2xl">
