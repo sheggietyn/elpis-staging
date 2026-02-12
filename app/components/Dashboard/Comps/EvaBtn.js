@@ -1,4 +1,9 @@
-import { DateTimeTag, PopLoader, WhiteLoader } from "@/app/util/ToastLoader";
+import {
+  DateTimeTag,
+  NotPops,
+  PopLoader,
+  WhiteLoader,
+} from "@/app/util/ToastLoader";
 import {
   Bot,
   ChartArea,
@@ -22,6 +27,7 @@ import {
   ArrowBigLeft,
   ChevronLeft,
   MessageCircleMore,
+  BrushCleaning,
 } from "lucide-react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
@@ -40,6 +46,8 @@ import { v4 as uuidv4 } from "uuid";
 import { ChatList, ChatListHis } from "@/app/connector/DataListDisplay";
 import { ConnectData } from "@/app/connector/CloggerFunc";
 import { motion, AnimatePresence } from "framer-motion";
+import { ref, remove, set } from "firebase/database";
+import { DB } from "@/app/Firebase/AuthHolder";
 
 export const EvaBtn = ({ openChat, DisplayCaller }) => {
   return (
@@ -465,6 +473,11 @@ export const EVAChatEngine = (data) => {
   const { LoaderUser, userData } = ConnectData();
   const AllChats = [...ChatData, ...TempChat];
 
+  const closeflyer = () => {
+    closeOpener();
+    setopenFloat(false);
+  };
+
   useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollTop = bottomRef.current.scrollHeight;
@@ -494,7 +507,7 @@ export const EVAChatEngine = (data) => {
     setTimeout(() => {
       setSplitLoad(false);
       localStorage.setItem("chatId", docId);
-    }, 3000);
+    }, 4000);
   };
 
   const DisplayChat = (item) => {
@@ -507,6 +520,36 @@ export const EVAChatEngine = (data) => {
     }, 2000);
   };
 
+  const ClearChat = () => {
+    setSplitLoad(true);
+    const CrsUrlQ = `Eva Request Users/${userId}/${chatIdFromStorage}`;
+    set(ref(DB, CrsUrlQ), null)
+      .then(() => {
+        NotPops("success", "Chat Cleared Successfully");
+        setSplitLoad(false);
+      })
+      .catch((e) => {
+        NotPops("error", e.message);
+        setSplitLoad(false);
+      });
+  };
+
+  const DeleteChat = () => {
+    setSplitLoad(true);
+    const CrsUrlQ = `Eva Request Users/${userId}/${chatIdFromStorage}`;
+    const CrsUrlQHis = `Eva Chat List Display/${userId}/${userId}/${chatIdFromStorage}`;
+    set(ref(DB, CrsUrlQ), null);
+    remove(ref(DB, CrsUrlQHis))
+      .then(() => {
+        NotPops("success", "Chat Deleted Successfully");
+        setSplitLoad(false);
+        setIsFlat(false);
+      })
+      .catch((e) => {
+        NotPops("error", e.message);
+        setSplitLoad(false);
+      });
+  };
   const SendChat = async (item) => {
     if (!Message.trim()) return;
     setIdChecker(item ? item.id : "");
@@ -588,18 +631,29 @@ export const EVAChatEngine = (data) => {
             </li>
             <li
               className="flex items-center gap-2 px-2 py-2 text-xs text-black hover:bg-gray-100 cursor-pointer"
-              onClick={closeOpener}
+              onClick={closeflyer}
             >
               <X size={14} />
               Close Chat
             </li>
-            <li
-              className="flex items-center gap-2 px-2 py-2 text-xs hover:bg-red-50 text-red-600 cursor-pointer"
-              onClick={closeOpener}
-            >
-              <Trash2 size={14} />
-              Delete Chat
-            </li>
+            {isFlat && (
+              <>
+                <li
+                  className="flex items-center gap-2 px-2 py-2 text-xs hover:bg-yellow-50 text-yellow-600 cursor-pointer"
+                  onClick={() => ClearChat()}
+                >
+                  <BrushCleaning size={14} />
+                  Clear Chat
+                </li>
+                <li
+                  className="flex items-center gap-2 px-2 py-2 text-xs hover:bg-red-50 text-red-600 cursor-pointer"
+                  onClick={() => DeleteChat()}
+                >
+                  <Trash2 size={14} />
+                  Delete Chat
+                </li>
+              </>
+            )}
           </ul>
         </div>
       )}
