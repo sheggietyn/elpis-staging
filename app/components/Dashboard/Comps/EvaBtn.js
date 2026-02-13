@@ -28,6 +28,7 @@ import {
   ChevronLeft,
   MessageCircleMore,
   BrushCleaning,
+  ArrowUp,
 } from "lucide-react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
@@ -95,7 +96,7 @@ const BtnLazer = ({ PassDataFunc, IdChecker, ...rest }) => {
   ];
   return (
     <div className="overflow-x-auto hide-scrollbar">
-      <div className="flex items-center  gap-3 pb-[4px]">
+      <div className="flex items-center gap-3">
         {GPtArray.map((item) => (
           <button
             className={`bg-gray-200 whitespace-nowrap ${
@@ -471,6 +472,7 @@ export const EVAChatEngine = (data) => {
   const [IdChecker, setIdChecker] = useState("");
   const [openFloat, setopenFloat] = useState(false);
   const { LoaderUser, userData } = ConnectData();
+  const [isFocused, setIsFocused] = useState(false);
   const AllChats = [...ChatData, ...TempChat];
 
   const closeflyer = () => {
@@ -808,29 +810,44 @@ export const EVAChatEngine = (data) => {
         )}
       </div>
 
-      <div className="border-t z-10 border-gray-200 px-3 pt-[4px] pb-2 gap-2">
-        <BtnLazer
-          PassDataFunc={() => SendChat(item)}
-          disabled={loading}
-          IdChecker={Type.id}
+      <div
+        className={`${isFocused ? "border-[2px] border-primary" : "border-[1px] border-gray-300"} mx-2 mb-1  rounded-2xl px-3"}`}
+      >
+        <textarea
+          rows={1}
+          type="text"
+          placeholder="Type a message…"
+          className="w-full px-2 pt-4 my-2 rounded-xl text-[14px] border-0
+             focus:outline-none focus:ring-0
+             resize-none"
+          style={{
+            height: "40px",
+            maxHeight: "100px",
+            resize: "none",
+            overflowY: "auto",
+          }}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onChange={(e) => setMessage(e.target.value)}
+          value={Message}
         />
+        <div className="flex gap-2 items-center pb-2 px-2 justify-between">
+          <div className="w-[85%] items-start">
+            <BtnLazer
+              PassDataFunc={() => SendChat(item)}
+              disabled={loading}
+              IdChecker={Type.id}
+            />
+          </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            onChange={(e) => setMessage(e.target.value)}
-            value={Message}
-            placeholder="Type a message..."
-            className="flex-1 border border-gray-400 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
           <button
-            className="bg-primary text-white px-3 py-2 rounded-full hover:bg-primary"
+            className="bg-primary text-white px-2 py-2  rounded-full hover:bg-primary"
             disabled={loading}
             onClick={() => {
               SendChat();
             }}
           >
-            {loading ? PopLoader : "➤"}
+            {loading ? PopLoader : <ArrowUp className="w-5 h-5" />}
           </button>
         </div>
       </div>
