@@ -29,6 +29,17 @@ import {
   MessageCircleMore,
   BrushCleaning,
   ArrowUp,
+  Check,
+  Copy,
+  Maximize2,
+  Minimize2,
+  MessageCirclePlusIcon,
+  MessageSquare,
+  MicIcon,
+  Plus,
+  CheckIcon,
+  XCircle,
+  CalculatorIcon,
 } from "lucide-react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
@@ -41,7 +52,7 @@ import PlayAudioTwo from "./AudioplayTake";
 import { Avatar, Flex, Badge, DropdownMenu } from "@radix-ui/themes";
 import Link from "next/link";
 import { BotDataLoad, ChatDiplayLoad } from "@/app/util/Loader";
-import { CompEmpty } from "../../EmptyComp/CompEmpty";
+import { CompEmpty, CompEmptySmall } from "../../EmptyComp/CompEmpty";
 import { LongBtn } from "../../Buttons/BtnLarge";
 import { v4 as uuidv4 } from "uuid";
 import { ChatList, ChatListHis } from "@/app/connector/DataListDisplay";
@@ -452,8 +463,45 @@ const getChatId = () => {
   return localStorage.getItem("chatId") || "";
 };
 
+const ChartArray = [
+  {
+    id: 1,
+    name: "Think EVA(2.2)",
+    icon: <MessageCircleQuestion size={12} />,
+    type: "chat",
+    color: "bg-green-100 text-green-700",
+    Acolor: "text-green-700",
+  },
+  {
+    id: 2,
+    name: "Text to Speech",
+    icon: <MicIcon size={12} />,
+    type: "voice",
+    color: "bg-pink-100 text-pink-700",
+    Acolor: "text-pink-700",
+  },
+
+  {
+    id: 3,
+    name: "Calculate",
+    icon: <CalculatorIcon size={12} />,
+    type: "chart",
+    color: "bg-blue-100 text-blue-700",
+    Acolor: "text-blue-700",
+  },
+
+  {
+    id: 4,
+    name: "Analyze",
+    icon: <ChartArea size={12} />,
+    type: "analyze",
+    color: "bg-orange-100 text-orange-700",
+    Acolor: "text-orange-700",
+  },
+];
+
 export const EVAChatEngine = (data) => {
-  const { userId, Username, opener, closeOpener } = data ? data : {};
+  const { userId, Username, opener, closeOpener, userData } = data ? data : {};
   const bottomRef = useRef(null);
   const [isFlat, setIsFlat] = useState(false);
   const [isMenu, setIsMenu] = useState(1);
@@ -461,19 +509,126 @@ export const EVAChatEngine = (data) => {
   const [chatId, setChatId] = useState("");
   const [Reply, setReply] = useState("");
   const { ChatListData, LoadListData } = ChatListHis();
-
   const [wormData, setWormData] = useState([]);
   const chatIdFromStorage = getChatId();
-  const { ChatData, LoadData } = ChatList(chatIdFromStorage);
+  const { ChatData, LoadData, SendLoader } = ChatList(chatIdFromStorage);
   const [TempChat, setTempChat] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [Recording, setRecording] = useState(false);
   const [SplitLoader, setSplitLoad] = useState(false);
   const [Type, setType] = useState("");
   const [IdChecker, setIdChecker] = useState("");
   const [openFloat, setopenFloat] = useState(false);
-  const { LoaderUser, userData } = ConnectData();
+  //const { LoaderUser, userData } = ConnectData();
   const [isFocused, setIsFocused] = useState(false);
-  const AllChats = [...ChatData, ...TempChat];
+  //const AllChats = [...ChatData, ...TempChat];
+  const [copied, setCopied] = useState(false);
+  const [fullScreen, setFullScreen] = useState(false);
+  const [DataPasser, setDatapasser] = useState("");
+  const [Floater, setFloater] = useState(false);
+  const recognitionRef = useRef(null);
+  const [draftText, setDraftText] = useState("");
+  const mediaStreamRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const animationRef = useRef(null);
+  const dataArrayRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [Typer, setTyper] = useState("");
+
+  const Fullname = userData
+    ? `${userData.Firstname} ${userData.Lastname}`
+    : "User";
+  const PlanType = userData ? `${userData.PlanType}` : "Plan";
+
+  const NameTag = userData
+    ? `${userData.Firstname.slice(0, 1)}${userData.Lastname.slice(0, 1)}`
+    : "--";
+
+  const drawWave = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const analyser = analyserRef.current;
+    const dataArray = dataArrayRef.current;
+
+    const render = () => {
+      animationRef.current = requestAnimationFrame(render);
+
+      if (!analyser || !dataArray) return;
+
+      // 🔥 FULL WIDTH RESPONSIVE FIX
+      const rect = canvas.getBoundingClientRect();
+
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      // 🔥 reset transform every frame
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      analyser.getByteFrequencyData(dataArray);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const centerY = canvas.height / 2;
+
+      // 🔥 BASE LINE
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+
+      ctx.beginPath();
+      ctx.moveTo(0, centerY);
+      ctx.lineTo(canvas.width, centerY);
+      ctx.stroke();
+
+      // 🔥 CHATGPT STYLE BARS
+      const bars = 80;
+      const spacing = canvas.width / bars;
+
+      for (let i = 0; i < bars; i++) {
+        const value = dataArray[i] || 0;
+
+        // smooth subtle movement
+        const height = (value / 255) * (canvas.height * 0.6);
+
+        const x = i * spacing;
+
+        ctx.beginPath();
+
+        ctx.moveTo(x, centerY - height / 2);
+
+        ctx.lineTo(x, centerY + height / 2);
+
+        ctx.stroke();
+      }
+    };
+
+    render();
+  };
+
+  const AllChats = (() => {
+    const firebaseRequests = new Set(ChatData.map((c) => c.request));
+    return [
+      ...ChatData,
+      ...TempChat.filter((t) => !firebaseRequests.has(t.request)),
+    ].sort((a, b) => (a.DateAdded || 0) - (b.DateAdded || 0));
+  })();
+
+  // Compute all chats for display
+  const AllChatsOld = (() => {
+    const firebaseDocIds = new Set(ChatData.map((c) => c.DocId));
+    const filteredTemp = TempChat.filter((t) => {
+      const inFirebase = firebaseDocIds.has(t.DocId);
+      const hasReply = !!t.reply && !t.error;
+      return !inFirebase && (!hasReply || t.error);
+    });
+
+    return [...ChatData, ...filteredTemp].sort(
+      (a, b) => (a.dateAdded || 0) - (b.dateAdded || 0),
+    );
+  })();
 
   const closeflyer = () => {
     closeOpener();
@@ -505,18 +660,35 @@ export const EVAChatEngine = (data) => {
     setopenFloat(false);
     setWormData([]);
     setIsFlat(true);
-    setSplitLoad(true);
-    setTimeout(() => {
+    SendLoader();
+    localStorage.setItem("chatId", docId);
+
+    //setSplitLoad(true);
+    {
+      /*setTimeout(() => {
       setSplitLoad(false);
-      localStorage.setItem("chatId", docId);
-    }, 4000);
+    }, 4000);*/
+    }
   };
 
+  const ExpandScreenChat = () => {
+    if (isFlat) {
+      setFullScreen(!fullScreen);
+    } else {
+      if (!fullScreen) {
+        StartChat();
+        setFullScreen(!fullScreen);
+      }
+      setFullScreen(!fullScreen);
+    }
+  };
   const DisplayChat = (item) => {
     setWormData(item);
     localStorage.setItem("chatId", item.ChatId);
-    setIsFlat(true);
-    setSplitLoad(true);
+    if (fullScreen === false) {
+      setIsFlat(true);
+    }
+    SendLoader();
     setTimeout(() => {
       setSplitLoad(false);
     }, 2000);
@@ -552,7 +724,23 @@ export const EVAChatEngine = (data) => {
         setSplitLoad(false);
       });
   };
-  const SendChat = async (item) => {
+
+  const handleCopy = async (item) => {
+    const textToCopy = item.reply;
+    setDatapasser(item.DocId);
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
+  };
+  // Legacy First version of SendChat, Keep for Reference, Do Not Delete
+  const SendChatVV = async (item) => {
     if (!Message.trim()) return;
     setIdChecker(item ? item.id : "");
 
@@ -601,7 +789,7 @@ export const EVAChatEngine = (data) => {
       setTimeout(() => setTempChat([]), 1500);
       setLoading(false);
     } catch (err) {
-      console.log("Error:", err.message);
+      //console.log("Error:", err.message);
       setLoading(false);
       setTempChat((prev) =>
         prev.map((chat) =>
@@ -617,11 +805,451 @@ export const EVAChatEngine = (data) => {
     }
   };
 
+  const requestPermission = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      return true;
+    } catch (err) {
+      alert("Microphone permission denied");
+      return false;
+    }
+  };
+
+  const AudioRecording = async () => {
+    const Request = await requestPermission();
+    if (Request) {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        alert("Speech recognition not supported in this browser");
+        return;
+      }
+      setLoading(true);
+      const allowed = await requestPermission();
+      if (!allowed) return;
+
+      // 🎤 Speech recognition
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+
+      recognition.lang = "en-US";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      //setStatus("recording");
+      setDraftText("");
+
+      recognition.onresult = (event) => {
+        let text = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          text += event.results[i][0].transcript;
+        }
+
+        setDraftText(text);
+      };
+
+      recognition.start();
+
+      // 🔥 AUDIO WAVE SETUP (NEW)
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      const audioContext = new AudioContext();
+
+      // ✅ fix browser audio block
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+
+      audioContextRef.current = audioContext;
+
+      const source = audioContext.createMediaStreamSource(stream);
+
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 128;
+
+      analyserRef.current = analyser;
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      dataArrayRef.current = dataArray;
+
+      source.connect(analyser);
+
+      setTimeout(() => {
+        drawWave();
+      }, 100);
+      setRecording(true);
+    }
+  };
+
+  const StopRecording = () => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+
+    cancelAnimationFrame(animationRef.current);
+
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+    }
+    setDraftText("");
+    setLoading(false);
+    setRecording(false);
+  };
+
+  const FinishRecording = () => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+
+    if (draftText.trim()) {
+      setMessage((prev) =>
+        prev ? `${prev} ${draftText.trim()}` : draftText.trim(),
+      );
+    }
+    setLoading(false);
+    setTimeout(() => {
+      setDraftText("");
+    }, 500);
+    setRecording(false);
+  };
+
+  // Instead of removing immediately on success, update it to show the reply
+
+  const TypeChecker = (item) => {
+    setTyper(item);
+  };
+  // and let the Firebase sync naturally replace it
+
+  const SendChat = async (item) => {
+    if (!Message.trim()) return;
+    setIdChecker(Typer ? Typer.id : "");
+    setTempChat([]);
+
+    const tempId = Date.now();
+    const newChat = {
+      id: tempId,
+      request: Message,
+      reply: "",
+      loading: true,
+      error: false,
+      type: Typer ? Typer.type : "chat",
+      dateAdded: tempId, // ✅ add this
+    };
+
+    setLoading(true);
+    setTempChat((prev) => [...prev, newChat]);
+    setMessage("");
+
+    try {
+      const Data = {
+        msg: newChat.request,
+        userId: userId,
+        token_charge: 2000,
+        type: Typer ? Typer.type : "chat",
+        chatId: chatIdFromStorage,
+      };
+
+      const res = await fetch("/api/chatOsGpt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Data),
+      });
+
+      if (!res.ok)
+        throw new Error(`Hey ${Username} 😊, Connection Error, Kindly Retry`);
+
+      const data = await res.json();
+
+      // ✅ Update temp chat with reply — stays visible until Firebase takes over
+      setTempChat((prev) =>
+        prev.map((chat) =>
+          chat.id === tempId
+            ? { ...chat, reply: data.response || data.reply, loading: false }
+            : chat,
+        ),
+      );
+    } catch (err) {
+      // ❌ Error: keep temp chat visible with error message (Firebase won't save this)
+      setTempChat((prev) =>
+        prev.map((chat) =>
+          chat.id === tempId
+            ? {
+                ...chat,
+                reply: err.message || "❌ Network error. Please try again.",
+                loading: false,
+                error: true,
+              }
+            : chat,
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const BottomUIInfo = (
+    <div className="flex items-center gap-x-2">
+      <div className="w-10 h-10 rounded-full flex justify-center items-center bg-gray-200 p-2 text-md font-bold text-gray-700">
+        {NameTag}
+      </div>
+      <div className="pl-2">
+        <div className="text-sm font-semibold text-gray-900">{Fullname}</div>
+        <div className="text-xs font-medium text-gray-600">{PlanType}</div>
+      </div>
+    </div>
+  );
+
+  const AudioRecoder = (
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="flex items-center w-[100%]"
+    >
+      <canvas
+        ref={canvasRef}
+        className={`${Typer ? "w-[55%]" : "w-[70%]"} flex-1 h-[30px] pr-1`}
+      />
+      <button
+        className="bg-gray-100 text-white px-2 py-2 mr-2 rounded-full hover:bg-primary hover:text-white"
+        onClick={() => {
+          StopRecording();
+        }}
+      >
+        <X className="w-5 h-5 text-gray-700" />
+      </button>
+      <button
+        className="bg-gray-100 text-white px-2 py-2 mr-1 rounded-full hover:bg-primary hover:text-white"
+        onClick={() => {
+          FinishRecording();
+        }}
+      >
+        <CheckIcon className="w-5 h-5 font-extrabold text-gray-700 hover:text-white" />
+      </button>
+    </motion.div>
+  );
+
+  const FloatingUI = (
+    <>
+      <div className="z-30">
+        <div className="relative inline-block text-left">
+          {/* POP OUT */}
+          <div
+            className={`absolute bottom-full mb-2 w-[130px] rounded-md bg-white shadow-lg border border-gray-300 z-50 transition-all duration-200 ease-out
+        ${
+          Floater
+            ? "opacity-100 translate-y-0 scale-100"
+            : "opacity-0 translate-y-2 scale-95 pointer-events-none"
+        }`}
+          >
+            <ul className="py-1 text-sm">
+              {ChartArray.map((item) => (
+                <li
+                  key={item.id}
+                  onClick={() => !loading && TypeChecker(item)}
+                  className={`flex items-center gap-2 px-2 py-2 text-xs text-black ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-100 cursor-pointer"
+                  }
+`}
+                >
+                  {item.icon}
+                  {item.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* BUTTON (MOVED INSIDE, STYLE UNCHANGED) */}
+          <div className="flex items-center gap-2">
+            <button
+              className="bg-gray-100 text-white px-2 py-2 mr-1 rounded-full hover:bg-primary hover:text-white"
+              disabled={loading}
+              onClick={() => setFloater(!Floater)}
+            >
+              <Plus className="w-4 h-4 text-gray-700" />
+            </button>
+            {Typer && (
+              <div
+                className={`text-[12px] font-medium ${Typer.color} px-3 py-2 rounded-lg flex items-center gap-1`}
+              >
+                {Typer.name}
+                <button onClick={() => setTyper("")}>
+                  <XCircle size={12} className={`${Typer.Acolor}`} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  const Switch = (
+    <>
+      <div
+        ref={bottomRef}
+        className="flex-1 flex-col gap-3 px-2 mt-5 pb-5 space-y-2 text-sm overflow-y-auto h-[calc(100vh-200px)]"
+      >
+        <div className="self-start bg-gray-100 px-3 py-2 rounded-lg w-fit text-gray-900">
+          Hi {Username} 👋
+        </div>
+        <div className="self-start bg-gray-100 px-3 py-2 rounded-lg w-fit text-gray-900">
+          Welcome to Elpis Academy, I'm EVA your Elpis Virtual Analyst, What
+          will you like me to help you with today ?
+        </div>
+
+        {/* User Message SplitLoader */}
+        {LoadData || SplitLoader ? (
+          <ChatDiplayLoad count={4} />
+        ) : (
+          <>
+            {AllChats.map((chat, index) => (
+              <div key={chat.id || index}>
+                {/* User Message */}
+                <div className="bg-primary px-3 py-2 selection:bg-gray-300 rounded-md text-sm select-all text-white w-fit mb-2 ml-auto">
+                  {chat.request}
+                </div>
+
+                {/* Eva Message */}
+                {chat.loading ? (
+                  <div className="bg-gray-200 px-3 py-2 rounded-md text-sm text-black w-fit mr-auto">
+                    {WhiteLoader}
+                  </div>
+                ) : (
+                  <>
+                    <>
+                      {chat.reply && (
+                        <div className="mr-auto max-w-fit">
+                          {/* Message Bubble */}
+                          <div className="bg-gray-100 px-3 py-2 select-text rounded-md text-sm text-black prose prose-p:py-2 prose-li:py-1 max-w-none">
+                            {chat.audioUrl && (
+                              <div className="bg-gray-100 px-3 py-2 select-text shadow-sm w-full rounded-md text-sm mb-2 text-black">
+                                <PlayAudioTwo audioUrl={chat.audioUrl} />
+                              </div>
+                            )}
+
+                            <ReactMarkdown
+                              components={{
+                                p: ({ children }) => (
+                                  <p className="my-2">{children}</p>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="my-1">{children}</li>
+                                ),
+                              }}
+                            >
+                              {chat.reply}
+                            </ReactMarkdown>
+                          </div>
+
+                          {/* Copy Button – BELOW bubble */}
+                          <button
+                            onClick={() => handleCopy(chat)}
+                            className="mt-2 ml-2 flex items-center gap-1 text-xs text-gray-500 hover:text-black transition"
+                            title="Copy"
+                          >
+                            {copied && DataPasser === chat.DocId ? (
+                              <Check className="w-4 h-4" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  </>
+                )}
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+
+      <div
+        className={`${isFocused ? "border-[2px] border-primary" : "border-[1px] border-gray-300"} mx-2 mb-1 shadow-md rounded-2xl px-3"}`}
+      >
+        <textarea
+          rows={1}
+          type="text"
+          placeholder="Type a message…"
+          className="w-full px-2 pt-4 my-2 rounded-xl text-[14px] border-0
+             focus:outline-none focus:ring-0
+             resize-none text-gray-900"
+          style={{
+            height: "40px",
+            maxHeight: "100px",
+            resize: "none",
+            overflowY: "auto",
+          }}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onChange={(e) => setMessage(e.target.value)}
+          value={Message}
+        />
+        <div className="flex gap-2 items-center pb-2 px-2 justify-between">
+          {/*<div className="w-[85%] items-start">
+            <BtnLazer
+              PassDataFunc={(item) => SendChat(item)}
+              disabled={loading}
+              IdChecker={Type.id}
+            />
+          </div>*/}
+          {FloatingUI}
+
+          {Recording ? (
+            AudioRecoder
+          ) : (
+            <motion.div
+              key="action"
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="flex items-center"
+            >
+              {" "}
+              <button
+                className="bg-gray-100 text-white px-2 py-2 mr-2 rounded-full hover:bg-primary hover:text-white"
+                disabled={loading}
+                onClick={() => {
+                  AudioRecording();
+                }}
+              >
+                <MicIcon className="w-5 h-5 text-gray-700 hover:text-white" />
+              </button>
+              <button
+                className="bg-black text-white px-2 py-2 rounded-full hover:bg-primary"
+                disabled={loading}
+                onClick={() => {
+                  SendChat();
+                }}
+              >
+                {loading ? PopLoader : <ArrowUp className="w-5 h-5" />}
+              </button>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
   const FloaterDisplay = (
     <div className="relative inline-block text-left">
       {openFloat && (
-        <div
-          className={`absolute right-2 mt-2 w-[120px] whitespace-nowrap rounded-md bg-white shadow-lg  z-50 border-[1px] border-gray-300 transition-all duration-200 ease-out ${openFloat ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-1 scale-95 pointer-events-none"}`}
+        <motion.div
+          initial={{ opacity: 0, y: 12, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.95 }}
+          transition={{
+            duration: 0.2,
+            ease: "easeOut",
+          }}
+          className="absolute right-2 mt-[2px] w-[120px] whitespace-nowrap rounded-md bg-white shadow-lg z-50 border border-gray-300"
         >
           <ul className="py-1 text-sm">
             <li
@@ -631,6 +1259,24 @@ export const EVAChatEngine = (data) => {
               <MessageCircle size={14} />
               Start New Chat
             </li>
+
+            <li
+              className="md:flex items-center gap-2 px-2 hidden py-2 text-xs text-black hover:bg-gray-100 cursor-pointer"
+              onClick={() => ExpandScreenChat()}
+            >
+              {fullScreen ? (
+                <>
+                  <Minimize2 size={14} />
+                  Normal Screen
+                </>
+              ) : (
+                <>
+                  <Maximize2 size={14} />
+                  Full Screen
+                </>
+              )}
+            </li>
+
             <li
               className="flex items-center gap-2 px-2 py-2 text-xs text-black hover:bg-gray-100 cursor-pointer"
               onClick={closeflyer}
@@ -638,7 +1284,7 @@ export const EVAChatEngine = (data) => {
               <X size={14} />
               Close Chat
             </li>
-            {isFlat && (
+            {(isFlat || fullScreen) && (
               <>
                 <li
                   className="flex items-center gap-2 px-2 py-2 text-xs hover:bg-yellow-50 text-yellow-600 cursor-pointer"
@@ -657,7 +1303,7 @@ export const EVAChatEngine = (data) => {
               </>
             )}
           </ul>
-        </div>
+        </motion.div>
       )}
     </div>
   );
@@ -745,133 +1391,120 @@ export const EVAChatEngine = (data) => {
     </>
   );
 
-  const Switch = (
+  {
+    /* Full Screen Components */
+  }
+
+  const ChatlistData = (
     <>
-      <div
-        ref={bottomRef}
-        className="flex-1 flex-col gap-3 px-2 mt-5 pb-5 space-y-2 text-sm overflow-y-auto h-[calc(100vh-200px)]"
-      >
-        <div className="self-start bg-gray-100 px-3 py-2 rounded-lg w-fit">
-          Hi {Username} 👋
-        </div>
-        <div className="self-start bg-gray-100 px-3 py-2 rounded-lg w-fit">
-          Welcome to Elpis Academy, I'm EVA your trading virtual advisor, What
-          will you like me to help you with today ?
-        </div>
-
-        {/* User Message SplitLoader */}
-        {LoadData || SplitLoader ? (
-          <ChatDiplayLoad count={4} />
-        ) : (
-          <>
-            {AllChats.map((chat, index) => (
-              <div key={chat.id || index}>
-                {/* User Message */}
-                <div className="bg-primary px-3 py-2 selection:bg-gray-300 rounded-md text-sm select-all text-white w-fit mb-2 ml-auto">
-                  {chat.request}
+      {LoadListData ? (
+        <BotDataLoad count={10} />
+      ) : (
+        <>
+          {ChatListData.length > 0 ? (
+            <>
+              {ChatListData.map((item) => (
+                <div
+                  className="p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-sm text-gray-900"
+                  onClick={() => DisplayChat(item)}
+                  key={item.id}
+                >
+                  {item.Title
+                    ? item.Title.length > 28
+                      ? (
+                          item.Title.charAt(0).toUpperCase() +
+                          item.Title.slice(1)
+                        ).substring(0, 28) + "..."
+                      : item.Title.charAt(0).toUpperCase() + item.Title.slice(1)
+                    : ""}
                 </div>
-
-                {/* Eva Message */}
-                {chat.loading ? (
-                  <div className="bg-gray-200 px-3 py-2 rounded-md text-sm text-black w-fit mr-auto">
-                    {WhiteLoader}
-                  </div>
-                ) : (
-                  <>
-                    <>
-                      {chat.reply && (
-                        <div className="bg-gray-100 px-3 py-2 select-text rounded-md text-sm text text-black w-fit prose prose-invert prose-p:py-2 prose-li:py-1 max-w-none mr-auto">
-                          {chat.audioUrl ? (
-                            <div className="bg-gray-100 px-3 py-2 select-text shadow-sm w-full rounded-md text-sm mb-2 text text-black prose prose-invert prose-p:py-2 prose-li:py-1 max-w-none mr-auto">
-                              <PlayAudioTwo audioUrl={chat.audioUrl} />
-                            </div>
-                          ) : null}
-
-                          <ReactMarkdown
-                            components={{
-                              p: ({ children }) => (
-                                <p className="my-2">{children}</p>
-                              ),
-                              li: ({ children }) => (
-                                <li className="my-1">{children}</li>
-                              ),
-                            }}
-                          >
-                            {chat.reply}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                    </>
-                  </>
-                )}
+              ))}
+            </>
+          ) : (
+            <div className="flex justify-center h-full items-center">
+              <div>
+                <MessageCircleMore className="w-12 h-12 text-gray-300 mx-auto pb-2" />
+                <CompEmpty
+                  Title={"No Chat History"}
+                  SmallTitle={`${"Chat History Displays here"}`}
+                />
               </div>
-            ))}
-          </>
-        )}
-      </div>
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
 
-      <div
-        className={`${isFocused ? "border-[2px] border-primary" : "border-[1px] border-gray-300"} mx-2 mb-1  rounded-2xl px-3"}`}
-      >
-        <textarea
-          rows={1}
-          type="text"
-          placeholder="Type a message…"
-          className="w-full px-2 pt-4 my-2 rounded-xl text-[14px] border-0
-             focus:outline-none focus:ring-0
-             resize-none"
-          style={{
-            height: "40px",
-            maxHeight: "100px",
-            resize: "none",
-            overflowY: "auto",
-          }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChange={(e) => setMessage(e.target.value)}
-          value={Message}
-        />
-        <div className="flex gap-2 items-center pb-2 px-2 justify-between">
-          <div className="w-[85%] items-start">
-            <BtnLazer
-              PassDataFunc={() => SendChat(item)}
-              disabled={loading}
-              IdChecker={Type.id}
-            />
+  // Sidebar and Data Switcher
+
+  const fullScreenData = (
+    <div className="flex flex-1 overflow-hidden">
+      {fullScreen && (
+        <motion.div
+          initial={{ x: -40, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="w-60 border-r border-r-gray-200  flex flex-col"
+        >
+          <div className="p-3 space-y-2 border-b border-b-gray-200 text-sm font-medium pt-5 text-gray-900">
+            <button
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition"
+              onClick={() => StartChat()}
+            >
+              <MessageCirclePlusIcon className="w-4 h-4" />
+              Start New Chat
+            </button>
+            <div className="px-3 py-2 flex items-center gap-2">
+              <MessageCircleMore className="w-4 h-4" />
+              Previous Chats
+            </div>
           </div>
 
-          <button
-            className="bg-primary text-white px-2 py-2  rounded-full hover:bg-primary"
-            disabled={loading}
-            onClick={() => {
-              SendChat();
-            }}
-          >
-            {loading ? PopLoader : <ArrowUp className="w-5 h-5" />}
-          </button>
+          <div className="flex-1 overflow-y-auto p-2 space-y-2">
+            {ChatlistData}
+          </div>
+          <div className="p-3 space-y-1 border-t border-t-gray-200 text-sm font-medium pt-5">
+            {BottomUIInfo}
+          </div>
+        </motion.div>
+      )}
+      <div className="flex-1 flex justify-center overflow-hidden">
+        <div className="w-full max-w-3xl flex flex-col">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-4 md:px-6">
+            {Switch}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 
   return (
     <>
       {opener && (
         <motion.div
+          layout
           initial={{ scale: 0.92, opacity: 0, y: 12 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.95, opacity: 0, y: 8 }}
           transition={{
-            duration: 0.4,
-            ease: [0.22, 1, 0.36, 1], // smooth, premium curve
+            duration: 0.45,
+            ease: [0.22, 1, 0.36, 1],
           }}
-          className={`fixed z-60 bg-white shadow-2xl border border-gray-200 flex flex-col inset-0 w-full h-full rounded-none md:inset-auto md:bottom-24 md:right-6 md:w-96 md:h-160 md:rounded-2xl`}
+          className={`fixed z-60 bg-white shadow-2xl border border-gray-200 flex flex-col
+      ${
+        fullScreen
+          ? "inset-0 w-full h-full rounded-none"
+          : "inset-0 w-full h-full rounded-none md:inset-auto md:bottom-24 md:right-6 md:w-96 md:h-[40rem] md:rounded-2xl"
+      }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between bg-primary text-white px-4 py-3 rounded-t-2xl">
+          <div
+            className={`flex items-center justify-between bg-gray-100 text-white px-4 py-3 ${
+              fullScreen ? "rounded-none" : "rounded-t-2xl"
+            }`}
+          >
             <div className="flex gap-x-2 items-center">
               <div className="flex items-center">
-                {isFlat && (
+                {isFlat && !fullScreen && (
                   <button
                     className="w-5 h-5 cursor-pointer"
                     onClick={() => {
@@ -879,7 +1512,7 @@ export const EVAChatEngine = (data) => {
                       setIsFlat(false);
                     }}
                   >
-                    <ChevronLeft className="w-5 h-5 text-white" />
+                    <ChevronLeft className="w-5 h-5 text-black" />
                   </button>
                 )}
                 <div className="relative w-6 h-6 overflow-hidden rounded-full">
@@ -887,17 +1520,20 @@ export const EVAChatEngine = (data) => {
                 </div>
               </div>
 
-              <h3 className="font-semibold text-sm">Chat With EVA</h3>
+              <h3 className="font-semibold text-sm text-black">
+                Chat With EVA
+              </h3>
             </div>
             <button
               onClick={() => setopenFloat(!openFloat)}
-              className="text-white hover:text-gray-200 cursor-pointer"
+              className="text-black hover:text-primary cursor-pointer"
             >
               <Grip className="w-5 h-5" />
             </button>
           </div>
           {FloaterDisplay}
-          {isFlat ? Switch : Lefter}
+          {fullScreen ? fullScreenData : null}
+          {fullScreen ? null : <>{isFlat ? Switch : Lefter}</>}
         </motion.div>
       )}
     </>

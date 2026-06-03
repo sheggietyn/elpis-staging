@@ -261,6 +261,7 @@ export const Dashboard = ({ children }) => {
       closeOpener={() => setIsEvaOpen(false)}
       Username={Username}
       userId={user.uid}
+      userData={userData}
     />
   );
 

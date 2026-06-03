@@ -733,33 +733,38 @@ export const ChatList = (ChatId) => {
   const [ChatData, setChatData] = useState([]);
   const [LoadData, setLoadData] = useState(true);
 
+  const SendLoader = () => {
+    setLoadData(true);
+    setChatData([]);
+  };
+
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid || !ChatId) return;
+
+    setLoadData(true);
 
     const CrsUrl = `Eva Request Users/${user.uid}/${ChatId}`;
     const dataRef = ref(DB, CrsUrl);
-    const dataQuery = query(dataRef, orderByChild("DateAdded"));
+    const dataQuery = query(dataRef, orderByChild("dateAdded"));
 
-    const fetchData = () => {
-      onValue(dataQuery, (snapshot) => {
-        const fetchedData = [];
-        snapshot.forEach((snap) => {
-          fetchedData.push({ id: snap.key, ...snap.val() });
-        });
-        setChatData(fetchedData.reverse());
-        setLoadData(false);
+    const unsubscribe = onValue(dataQuery, (snapshot) => {
+      const fetchedData = [];
+
+      snapshot.forEach((snap) => {
+        fetchedData.push({ id: snap.key, ...snap.val() });
       });
-    };
 
-    fetchData();
+      // ensure correct order
+      fetchedData.sort((a, b) => a.DateAdded - b.DateAdded);
 
-    // Optional: cleanup listener if needed
-    return () => {
-      // off(dataRef); // Uncomment if using `on` instead of `onValue`
-    };
+      setChatData(fetchedData);
+      setLoadData(false);
+    });
+
+    return () => unsubscribe();
   }, [user?.uid, ChatId]);
 
-  return { ChatData, LoadData };
+  return { ChatData, LoadData, SendLoader };
 };
 
 export const ChatListHis = () => {
